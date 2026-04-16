@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useData } from '../../contexts/DataContext'
 import Button from '../shared/Button'
 import Input from '../shared/Input'
 import Card from '../shared/Card'
@@ -8,7 +7,6 @@ import { Eye, EyeOff, Recycle, ArrowLeft } from 'lucide-react'
 
 const RegisterForm = ({ onSwitchToLogin }) => {
   const { register, isLoading } = useAuth()
-  const { addNotification } = useData()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     name: '',
@@ -126,19 +124,12 @@ const RegisterForm = ({ onSwitchToLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateStep3()) return
-    
+
     const result = await register(formData)
-    
-    if (result.success) {
-      addNotification({
-        userId: result.user.id,
-        type: 'welcome',
-        title: 'Welcome to RecycleToken!',
-        message: `Welcome, ${result.user.name}! Start earning tokens by recycling plastic.`
-      })
-    } else {
+
+    if (!result.success) {
       setErrors({ general: result.error })
     }
   }

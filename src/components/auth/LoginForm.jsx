@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useData } from '../../contexts/DataContext'
 import Button from '../shared/Button'
 import Input from '../shared/Input'
 import Card from '../shared/Card'
@@ -8,7 +7,6 @@ import { Eye, EyeOff, Recycle } from 'lucide-react'
 
 const LoginForm = ({ onSwitchToRegister }) => {
   const { login, isLoading } = useAuth()
-  const { addNotification } = useData()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -47,31 +45,14 @@ const LoginForm = ({ onSwitchToRegister }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
+
     const result = await login(formData.email, formData.password)
-    
-    if (result.success) {
-      addNotification({
-        userId: result.user.id,
-        type: 'login_success',
-        title: 'Welcome Back!',
-        message: `Welcome back, ${result.user.name}!`
-      })
-    } else {
+
+    if (!result.success) {
       setErrors({ general: result.error })
     }
-  }
-
-  const handleDemoLogin = (role) => {
-    const demoAccounts = {
-      user: { email: 'user@demo.com', password: 'demo123' },
-      collector: { email: 'collector@demo.com', password: 'demo123' },
-      collection_point: { email: 'point@demo.com', password: 'demo123' }
-    }
-    
-    setFormData(demoAccounts[role])
   }
 
   return (
@@ -138,44 +119,6 @@ const LoginForm = ({ onSwitchToRegister }) => {
             Sign In
           </Button>
         </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Demo Accounts</span>
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleDemoLogin('user')}
-              className="text-xs"
-            >
-              User
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleDemoLogin('collector')}
-              className="text-xs"
-            >
-              Collector
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleDemoLogin('collection_point')}
-              className="text-xs"
-            >
-              Collection Point
-            </Button>
-          </div>
-        </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
